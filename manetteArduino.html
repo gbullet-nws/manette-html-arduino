@@ -1,0 +1,292 @@
+#include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
+const char* ssid = "******";
+const char* password = "******";
+const int trigP = D4;  
+const int echoP = D8;  
+const int MA1 = D6;     
+const int MA2 = D7;   
+const int MB1 = D1;    
+const int MB2 = D3;  
+
+// Create AsyncWebServer object on port 80
+AsyncWebServer server(80);
+
+String getDistance() {
+ digitalWrite(trigP, LOW);   // Makes trigPin low
+delayMicroseconds(2);       // 2 micro second delay 
+
+digitalWrite(trigP, HIGH);  // tigPin high
+delayMicroseconds(10);      // trigPin high for 10 micro seconds
+digitalWrite(trigP, LOW);   // trigPin low
+
+duration = pulseIn(echoP, HIGH);   //Read echo pin, time in microseconds
+distance= duration*0.034/2;        //Calculating actual/real distance
+
+Serial.print("Distance = ");        Serial.println(distance);
+  return String(distance);
+}
+
+const char index_html[] PROGMEM = R"rawliteral(
+
+<!DOCTYPE html> 
+
+<html lang="fr">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <title> Manette Arduino </title>
+
+        <style>
+            html { font-family:'Roboto',sans-serif; }
+            h1, h2 { text-align:center; background-color: #f5f5f5; } 
+            h3 { text-align:center; }
+            a { text-decoration: none; text-decoration-color: none; }
+
+            /* MenuTopNav CSS */
+            header ul { padding-inline-start:0px; }
+
+            .menuTopNav { background-color:#e2e2d2; text-align:center; }
+            .menuTopNav li { display:inline-block; }
+            .menuTopNav a 
+            {
+                display:block;
+                padding:5px 5px 5px 5px;
+                border:1px solid #ffffff;
+                background-color: #0905e2b8;
+                color: #ffffff;
+                text-decoration:none;
+                margin:10px;
+                text-align:center;
+                border-radius:5px; 
+            }
+            .menuTopNav a:hover { background-color:#ffffff; color:#0400f0; border-color:#ffffff; }
+
+            /* Footer */
+            footer h6 
+            { 
+                text-align:center; 
+                font-size:14px; 
+                background-color:rgb(10,12,61); 
+                color:#ffffff; 
+                padding: 1em;
+
+                margin-block-start: 0em;
+                margin-block-end: 0em;
+            }
+            footer h6 a { color:white; text-decoration: underline; }
+            
+
+            main section form, main section p 
+            {
+                text-align: center;
+            }
+
+            /* ZoneControleur CSS */
+            .ZoneControleur 
+            { 
+                display:grid;
+                grid-template-columns:repeat(3, 1fr);
+                grid-template-rows:repeat(3, 1fr);
+                grid-column-gap:0px;
+                grid-row-gap:0px; 
+
+                text-align: center;
+            }
+            .ZoneControleur1 { grid-area: 1 / 2 / 2 / 3; }
+            .ZoneControleur2 { grid-area: 2 / 1 / 3 / 2; }
+            .ZoneControleur3 { grid-area: 2 / 2 / 3 / 3; }
+            .ZoneControleur4 { grid-area: 2 / 3 / 3 / 4; }
+            .ZoneControleur5 { grid-area: 3 / 2 / 4 / 3; }
+
+
+            .ZoneControleur p { text-align : center; }
+
+            .bouttonControle 
+            {
+                width: 100%;
+                height: 140px;
+            }
+            .bouttonControleStop
+            {
+                width: 100%;
+                height: 140px;
+                background-color: rgb(221, 9, 9);
+            }
+
+        </style>
+
+    </head>
+
+
+    <body class="fontFamily">
+
+        <header>
+
+            <ul class="menuTopNav">
+                <li>
+                    <a href="index.html"> Controleur basique </a>
+                </li>
+                <li>
+                    <a href="index.html"> Controleur : "Sport" </a>
+                </li>
+            </ul>
+
+        </header>
+
+        <main>
+
+            <h1> Controleur à distance </h1>
+
+            <section>
+
+                <p> Insérez l'adresse IP : </p>
+
+                <!-- Formulaire de récup de l'adresse IP avec la méthode GET -->
+                <form action="" method="get">
+                    <label for="GET-adresseIP"> IP :</label>
+                    <input id="GET-adresseIP" type="text" name="adresseIP">
+                    <input type="submit" value="Connexion">
+                </form>    
+                
+            </section> </br> <hr>
+
+            <section>
+
+                <h2> Modèle pour : iPhone XR</h2>
+
+                <div class="ZoneControleur">
+
+                    <!-- Avancer -->
+                    <div class="ZoneControleur1"> 
+                        <a href="/avancer"> <button class="bouttonControle"> AVANCER </button> </a>
+                    </div>
+                    <!-- gauche  -->
+                    <div class="ZoneControleur2">  
+                            <a href="/gauche"> <button class="bouttonControle"> GAUCHE </button> </a>
+                    </div>
+                    <!-- stop -->
+                    <div class="ZoneControleur3"> 
+                            <a href="/stop"> <button class="bouttonControleStop"> STOP </button> </a>
+                    </div>
+                    <!-- droite -->
+                    <div class="ZoneControleur4">
+                            <a href="/droite"> <button class="bouttonControle"> DROITE </button> </a>
+                    </div>
+                    <!-- Reculer -->
+                    <div class="ZoneControleur5"> 
+                        <a href="/reculer"> <button class="bouttonControle"> RECULER </button> </a>
+                    </div>
+
+                </div>
+
+                <p>
+                    <span class="sensor-labels">Distance</span>
+                    <span id="distance">%Distance% cm</span>
+                  </p>
+            
+            </section>
+
+        </main>
+
+    </br>
+
+        <footer>
+
+            <h6> ©  ｜
+            </br> <a href="https://github.com/gbullet-nws"> À propos </a> </h6>
+
+        </footer>
+        
+    </body>
+
+
+    <script>
+
+        setInterval(function ( ) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              document.getElementById("distance").innerHTML = this.responseText;
+            }
+          };
+          xhttp.open("GET", "/distance", true);
+          xhttp.send();
+        }, 5000 ) ;
+
+    </script>
+
+
+</html>)rawliteral";
+
+void setup(){
+    Serial.begin(115200);
+  
+  pinMode(trigP, OUTPUT);  
+  pinMode(echoP, INPUT);   
+   pinMode(MA1, OUTPUT);
+    pinMode(MA2, OUTPUT);
+     pinMode(MB1, OUTPUT);
+      pinMode(MB2, OUTPUT);
+       pinMode(ENA, OUTPUT);
+        pinMode(ENB, OUTPUT);
+        
+    // Connect to Wi-Fi
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.println("..");
+    }
+    Serial.println(WiFi.localIP());
+  
+     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send_P(200, "text/html", index_html);
+    });
+   
+    server.on("/avancer, HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(MA1,HIGH);
+    digitalWrite(MA2,LOW);
+    digitalWrite(MB1,HIGH);
+    digitalWrite(MB2,LOW);   
+      request->send(200, "text/html", index_html);
+    });
+    server.on("/reculer", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(MA1,LOW);
+    digitalWrite(MA2,HIGH);
+    digitalWrite(MB1,LOW);
+    digitalWrite(MB2,HIGH);   
+      request->send(200, "text/html", index_html);
+    });
+     server.on("/stop", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(MA1,LOW);
+    digitalWrite(MA2,LOW);
+    digitalWrite(MB1,LOW);
+    digitalWrite(MB2,LOW);   
+      request->send(200, "text/html", index_html);
+    });
+     server.on("/droite", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(MA1,HIGH);
+    digitalWrite(MA2,LOW);
+    digitalWrite(MB1,LOW);
+    digitalWrite(MB2,HIGH);   
+      request->send(200, "text/html", index_html);
+    });
+   server.on("/gauche", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(MA1,LOW);
+    digitalWrite(MA2,HIGH);
+    digitalWrite(MB1,HIGH);
+    digitalWrite(MB2,LOW);   
+      request->send(200, "text/html", index_html);
+    });
+    
+    server.on("/distance", HTTP_GET, [](AsyncWebServerRequest *request){
+      request->send_P(200, "text/plain", getDistance().c_str());
+    });
+    
+    // Start server
+    server.begin();
+  }
