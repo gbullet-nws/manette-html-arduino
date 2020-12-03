@@ -1,0 +1,87 @@
+
+    /* MenuTopNav CSS */
+    header ul { padding-inline-start:0px; }
+
+    .menuTopNav { background-color:#e2e2d2; text-align:center; }
+    .menuTopNav li { display:inline-block; }
+    .menuTopNav a 
+    {
+        display:block;
+        padding:5px 5px 5px 5px;
+        border:1px solid #ffffff;
+        background-color: #0905e2b8;
+        color: #ffffff;
+        text-decoration:none;
+        margin:10px;
+        text-align:center;
+        border-radius:5px; 
+    }
+    .menuTopNav a:hover {   background-color:#ffffff; 
+                            color:#0400f0; 
+                            border-color:#ffffff; 
+                        }
+
+    /* Pour écran d'ordinateur */
+    @media (min-width: 600px)
+    {
+        html{   
+                font-family:'Roboto',sans-serif; 
+                width:50%;
+                padding-left: 25%; 
+            }
+    } 
+
+    /* Modifications générales */
+    html { font-family:'Roboto',sans-serif;}
+    h1, h2 { text-align:center; background-color: #f5f5f5; } 
+    h1 { font-size:30px; }
+    h3 { text-align:center; }
+    a { text-decoration: none; text-decoration-color: none; }
+
+    /* Footer */
+    footer h6 
+    { 
+        text-align:center; 
+        font-size:14px; 
+        background-color:rgb(10,12,61); 
+        color:#ffffff; 
+        padding: 1em;
+
+        margin-block-start: 0em;
+        margin-block-end: 0em;
+    }
+    footer h6 a { color:white; text-decoration: underline; }
+    
+
+    main section form, main section p 
+    {
+        text-align: center;
+    }
+
+    /* ZoneControleur CSS */
+    .ZoneControleur 
+    { 
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        grid-template-rows:repeat(3, 1fr);
+        grid-column-gap:0px;
+        grid-row-gap:0px; 
+
+        text-align: center;
+    }
+    .ZoneControleur1 { grid-area: 1 / 2 / 2 / 3; }
+    .ZoneControleur2 { grid-area: 2 / 1 / 3 / 2; }
+    .ZoneControleur3 { grid-area: 2 / 2 / 3 / 3; }
+    .ZoneControleur4 { grid-area: 2 / 3 / 3 / 4; }
+    .ZoneControleur5 { grid-area: 3 / 2 / 4 / 3; }
+
+
+    .ZoneControleur p { text-align : center; }
+
+    .boutonAvancerIMG { width:75%; justify-content: center;}
+    .boutonGaucheIMG { width:75%; transform: rotate(270deg); }
+    .boutonStopIMG { width: 75%; }
+    .boutonDroiteIMG { width:75%; transform:rotate(90deg); }
+    .boutonReculerIMG { width:75%; transform:rotate(180deg); }
+
+    #infoMouvement { color:red; font-size:20px;}
