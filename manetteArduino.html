@@ -126,13 +126,6 @@ const char index_html[] PROGMEM = R"rawliteral(
     <body class="fontFamily">
 
         <header>
-
-            <ul class="menuTopNav">
-                <li>
-                    <a href="index.html"> Controleur basique </a>
-                </li>
-            </ul>
-
         </header>
 
         <main>
@@ -154,7 +147,12 @@ const char index_html[] PROGMEM = R"rawliteral(
 
             <section>
 
-                <h2> Modèle pour : iPhone XR</h2>
+                <p id="infoMouvement"> Information Mouvement </p>
+
+                    <p>
+                        <span class="sensor-labels">Distance : </span> </br>
+                        <span id="distance">%Distance% cm</span>
+                    </p>
 
                 <div class="ZoneControleur">
 
@@ -180,11 +178,7 @@ const char index_html[] PROGMEM = R"rawliteral(
                     </div>
 
                 </div>
-
-                <p>
-                    <span class="sensor-labels">Distance</span>
-                    <span id="distance">%Distance% cm</span>
-                  </p>
+                
             
             </section>
 
